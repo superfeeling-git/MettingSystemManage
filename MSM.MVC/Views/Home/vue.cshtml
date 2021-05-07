@@ -1,0 +1,229 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>vue</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <style type="text/css">
+        .active, .style1, .style2{
+            color: red;
+            font-weight: bold;
+        }
+
+        .style2{
+            color:blue;
+        }
+
+        [v-cloak]{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app1">
+        {{text}}
+    </div>
+
+
+
+    <div id="app" v-cloak>
+        <!--
+
+    <input type="text" v-model="message" @@input="textInput"/>
+
+    <textarea v-model="message" cols="30" rows="4"></textarea>
+
+    {{message}}
+
+
+    <span :title="message">
+        {{message | customMethod('123','456')}}
+    </span>
+
+    <p v-if="seen">现在你看到我了</p>
+
+    <button @@click="reverseMessage('a',$event)">反转消息</button>
+
+    <button @@click="textInput">切换样式</button>
+
+    <button @@click="id++">切换样式</button>
+
+    {{id}}
+
+
+    <a href="http://www.baidu.com" @@click.prevent="clickTest('测试消息',$event)">链接测试</a>
+
+    <span v-html="link">
+
+    </span>
+
+    <template>
+        {{myName}}
+
+        <img :src="src" />
+    </template>
+
+    @{
+        var a = "abc";
+        var b = "123";
+        string c = $"{a}{b}";
+    }
+
+    <div :class="[style1,style2]">
+        样式测试
+    </div>
+
+    <div :class="{'active':isActive}" class="alert">
+        数组长度：
+        {{arrLength}}
+    </div>
+
+    <div style="background:#ccc;">
+        <template v-for="(v,k,i) in goods[0]">
+            <div>
+                索引:{{i}}  &nbsp;
+                键:{{k}}  &nbsp;
+                值:{{v}}  &nbsp;
+            </div>
+        </template>
+    </div>
+
+    <table class="">
+        <tr>
+            <td>ID</td>
+            <td>名字</td>
+            <td>图片.;</td>
+        </tr>
+        <tr v-for="book in goods" :key="book.goodsID">
+            <td>
+                {{book.goodsID}}
+            </td>
+            <td>
+                {{book.goodsName}}
+            </td>
+            <td>
+                {{book.goodsPic}}
+            </td>
+        </tr>
+    </table>
+
+
+    <div>
+        <label>
+            asp.net：<input type="checkbox" v-model="dev" value="asp.net" />
+        </label>
+        <label>
+            vue：<input type="checkbox" v-model="dev" value="vue" />
+        </label>
+        <label>
+            javascript：<input type="checkbox" v-model="dev" value="javascript" />
+        </label>
+
+
+        <select v-model="dev">
+            <option value="asp.net">asp.net</option>
+            <option>vue</option>
+            <option>javascript</option>
+        </select>
+
+
+        <button @@click="checkedRadio">选中javascript</button>
+
+    -->
+        <my-firstcom :mytitle="message"></my-firstcom>
+        <my-child></my-child>
+        <font-size></font-size>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+        var books = [];
+
+        $.ajax({
+            url: "/Home/goods",
+            type: "get",
+            dataType: "json",
+            async: false,
+            success: function (d) {
+                books = d;
+            }
+        })
+
+
+        Vue.component("my-firstcom", {
+            template: "<div>组件的内容{{childCon}}&nbsp;{{mytitle}}</div>",
+            props:["mytitle"],
+            data: function () {
+                return {
+                    childCon:"子组件数据"
+                };
+            }
+        });
+
+
+
+        var app = new Vue({
+            el: '#app', //挂载
+            data: {
+                message: 'Hello Vue!',
+                seen: false,
+                goods: books,
+                id: 1,
+                link: "<a href='#'>链接</a>",
+                src: "https://inews.gtimg.com/newsapp_ls/0/13456323467_640210/0",
+                isActive: true,
+                style1: "style1",
+                style2: "style2",
+                dev: "vue"
+            }, methods: {
+                reverseMessage: function (m, e) {
+                    console.log(e);
+                    this.message = "1807";
+                },
+                reverStyle: function () {
+                    this.isActive = !this.isActive;
+                },
+                clickTest: function (msg, event) {
+                    console.log(event);
+                    alert(msg);
+                },
+                textInput: function (e) {
+                    console.log(e);
+                },
+                checkedRadio: function () {
+                    this.dev = "javascript";
+                }
+            }, mounted: function () {
+                this.goods = this.goods.filter(m => m.goodsMoney > 1);
+            }, filters: {
+                customMethod: function (v, v1, v2) {
+                    return v + " 物联网" + v1 + v2;
+                }
+            }, computed: {
+                arrLength: function () {
+                    return this.goods[0];
+                },
+                myName: function () {
+                    return `我的名字：`;
+                }
+            }, components: {
+                "myChild": {
+                    "template":"<div>局部组件</div>"
+                },
+                "fontSize": {
+                    "template": "<div>fontSize局部组件</div>"
+                }
+            }
+        })
+
+        //app.message = "1807.NET";
+    </script>
+</body>
+</html>

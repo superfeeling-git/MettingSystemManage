@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MSM.Model</name>
+    </assembly>
+    <members>
+        <member name="P:MSM.Model.Entity.Goods.GoodsID">
+            <summary>
+            商品ID
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.GoodsName">
+            <summary>
+            商品名称
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.GoodsPic">
+            <summary>
+            商品图片
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.GoodsMoney">
+            <summary>
+            商品价格
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.CategoryID">
+            <summary>
+            所属分类
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.GoodsCategory">
+            <summary>
+            导航属性
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.CategoryID">
+            <summary>
+            分类ID
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.CategoryName">
+            <summary>
+            分类名称
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.ParentID">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.Depth">
+            <summary>
+            分类级别
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.ParentPath">
+            <summary>
+            分类路径
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.GoodsCategory.Goods">
+            <summary>
+            导航属性
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.GoodsModel.GoodsID">
+            <summary>
+            商品ID
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.GoodsModel.GoodsName">
+            <summary>
+            商品名称
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.GoodsModel.GoodsPic">
+            <summary>
+            商品图片
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.GoodsModel.GoodsMoney">
+            <summary>
+            商品价格
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.GoodsModel.CategoryID">
+            <summary>
+            所属分类
+            </summary>
+        </member>
+    </members>
+</doc>
