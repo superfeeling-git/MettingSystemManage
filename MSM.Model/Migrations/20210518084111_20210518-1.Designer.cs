@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MSM.Model.Migrations
 {
     [DbContext(typeof(MsmDbContext))]
-    [Migration("20210428031256_20210428-10")]
-    partial class _2021042810
+    [Migration("20210518084111_20210518-1")]
+    partial class _202105181
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,6 +30,9 @@ namespace MSM.Model.Migrations
 
                     b.Property<int>("CategoryID")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("GoodsMoney")
                         .HasColumnType("money");
@@ -63,8 +66,9 @@ namespace MSM.Model.Migrations
                     b.Property<int>("ParentID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParentPath")
-                        .HasColumnType("int");
+                    b.Property<string>("ParentPath")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CategoryID");
 

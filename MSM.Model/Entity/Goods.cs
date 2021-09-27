@@ -30,5 +30,13 @@ namespace MSM.Model.Entity
         /// 导航属性
         /// </summary>
         public GoodsCategory GoodsCategory { get; set; }
+        /// <summary>
+        /// 商品介绍
+        /// </summary>
+        public string Content { get; set; }
+        /// <summary>
+        /// 上传时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
     }
 }

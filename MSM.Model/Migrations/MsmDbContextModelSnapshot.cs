@@ -29,6 +29,12 @@ namespace MSM.Model.Migrations
                     b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("GoodsMoney")
                         .HasColumnType("money");
 
@@ -61,8 +67,9 @@ namespace MSM.Model.Migrations
                     b.Property<int>("ParentID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParentPath")
-                        .HasColumnType("int");
+                    b.Property<string>("ParentPath")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CategoryID");
 

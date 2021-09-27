@@ -25,7 +25,7 @@ namespace MSM.Model.Entity
         /// <summary>
         /// 分类路径
         /// </summary>
-        public int ParentPath { get; set; }
+        public string ParentPath { get; set; }
         /// <summary>
         /// 导航属性
         /// </summary>

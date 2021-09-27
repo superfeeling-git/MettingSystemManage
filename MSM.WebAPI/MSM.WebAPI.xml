@@ -4,6 +4,20 @@
         <name>MSM.WebAPI</name>
     </assembly>
     <members>
+        <member name="M:MSM.WebAPI.Controllers.AccountController.GeneralToken(MSM.Model.Model.LoginModel)">
+            <summary>
+            生成Token
+            </summary>
+            <param name="loginModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.AccountController.refreshtoken(MSM.Model.Model.LoginModel)">
+            <summary>
+            刷新令牌
+            </summary>
+            <param name="loginModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:MSM.WebAPI.Controllers.AccountController.GenerCode">
             <summary>
             生成验证码
@@ -13,6 +27,12 @@
         <member name="M:MSM.WebAPI.Controllers.ValidateCode.GeneralCode">
             <summary>
             生成随机串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.GoodsCategoryController.Index">
+            <summary>
+            
             </summary>
             <returns></returns>
         </member>
@@ -33,6 +53,56 @@
             获取全部商品
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.GoodsController.UploadFileAsync(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.QTimerController.Start">
+            <summary>
+            开始
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.QTimerController.Stop">
+            <summary>
+            关机、停止
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.QTimerController.Pause">
+            <summary>
+            暂停
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MSM.WebAPI.Controllers.QTimerController.Resume">
+            <summary>
+            继续
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MSM.WebAPI.Controllers.MyJobFactory">
+            <summary>
+            readonly const 区别
+            </summary>
+        </member>
+        <member name="T:MSM.WebAPI.Controllers.MyJob">
+            <summary>
+            作业（任务）
+            </summary>
+        </member>
+        <member name="P:MSM.WebAPI.AuthOptions.Security">
+            <summary>
+            Jwt认证Key
+            </summary>
+        </member>
+        <member name="P:MSM.WebAPI.AuthOptions.Expiration">
+            <summary>
+            过期时间【天】
+            </summary>
         </member>
         <member name="M:MSM.WebAPI.Startup.ConfigureContainer(Autofac.ContainerBuilder)">
             <summary>

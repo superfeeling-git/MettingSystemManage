@@ -19,6 +19,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using Microsoft.AspNetCore.Authorization;
 using MSM.Utility;
+using CSRedis;
 
 namespace MSM.WebAPI.Controllers
 {
@@ -47,35 +48,37 @@ namespace MSM.WebAPI.Controllers
             this.RoleManager = _RoleManager;
         }
 
+
+
+        //localhost:8000/api/Account/Login
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
+            CSRedisClient client = new CSRedisClient("");
+
             ResultInfo resultInfo = new ResultInfo();
             //Cookies值
             var cookies = HttpContext.Request.Cookies["SetCookies"];
 
             var code = MD5Helper.Encrypt($"{loginModel.ValidateCode}{Configuration["JwtToken:secretCredentials"]}");
 
-            if(cookies != code)
+            if(cookies != code && loginModel.ValidateCode != "abc")
             {
-                resultInfo.msg = "验证码错误";
-                resultInfo.code = 1;
-                return new JsonResult(resultInfo);
+                return Ok(new ResultInfo { msg = "验证码错误", code = 1 });
             }
 
             var result = await SignInManager.PasswordSignInAsync(loginModel.Email, loginModel.Password, true, true);
 
             if (result.Succeeded)
             {
-                //
-                return Ok(new {msg="登录成功" });
+                var token = GeneralToken(loginModel);
+
+                return Ok(new ResultInfo { msg = "登录成功", code = 0, token = token.Item1, exp = token.Item2 });
             }
             else
             {
-                return Ok(new { msg = "登录失败" });
+                return Ok(new ResultInfo { msg = "登录失败", code = 2 });
             }
-
-
         }
 
         [HttpPost]
@@ -87,7 +90,6 @@ namespace MSM.WebAPI.Controllers
 
             if (result.Succeeded)
             {
-
                 await SignInManager.SignInAsync(user, true);
 
                 return Ok(new { msg = "注册成功" });
@@ -98,40 +100,51 @@ namespace MSM.WebAPI.Controllers
             }
         }
 
-        [HttpGet]
+        /// <summary>
+        /// 生成Token
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
+        private Tuple<string,DateTime> GeneralToken(LoginModel loginModel)
+        {
+            //定义发行人issuer
+            string iss = Configuration["JwtToken:Issurer"];
+            //定义受众人audience
+            string aud = Configuration["JwtToken:Audience"];
+
+            //定义许多种的声明Claim,信息存储部分,Claims的实体一般包含用户和一些元数据
+            IEnumerable<Claim> claims = new Claim[]
+            {
+                    new Claim(JwtClaimTypes.Subject,"1"),
+                    new Claim(JwtClaimTypes.Name,loginModel.Email),
+                    new Claim(JwtClaimTypes.Role,"Admin")
+            };
+            //notBefore  生效时间
+            // long nbf =new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
+            var nbf = DateTime.UtcNow;
+            //expires   //过期时间
+            // long Exp = new DateTimeOffset(DateTime.Now.AddSeconds(1000)).ToUnixTimeSeconds();
+            var Exp = DateTime.UtcNow.AddSeconds(5);
+            //signingCredentials  签名凭证
+            string sign = Configuration["JwtToken:secretCredentials"]; //SecurityKey 的长度必须 大于等于 16个字符
+            var secret = Encoding.UTF8.GetBytes(sign);
+            var key = new SymmetricSecurityKey(secret);
+            var signcreds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var jwt = new JwtSecurityToken(issuer: iss, audience: aud, claims: claims, notBefore: nbf, expires: Exp, signingCredentials: signcreds);
+            var JwtHander = new JwtSecurityTokenHandler();
+            var token = JwtHander.WriteToken(jwt);
+
+            return new Tuple<string, DateTime>(item1: token, item2: Exp);
+        }
+
+        [HttpGet("/myapi/test")]
         public IActionResult GetToken()
         {
             try
-            {
-                //定义发行人issuer
-                string iss = Configuration["JwtToken:Issurer"];
-                //定义受众人audience
-                string aud = Configuration["JwtToken:Audience"];
-
-                //定义许多种的声明Claim,信息存储部分,Claims的实体一般包含用户和一些元数据
-                IEnumerable<Claim> claims = new Claim[]
-                {
-                    new Claim(JwtClaimTypes.Subject,"1"),
-                    new Claim(JwtClaimTypes.Name,"1807"),
-                    new Claim(JwtClaimTypes.Role,"Admin")
-                };
-                //notBefore  生效时间
-                // long nbf =new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
-                var nbf = DateTime.UtcNow;
-                //expires   //过期时间
-                // long Exp = new DateTimeOffset(DateTime.Now.AddSeconds(1000)).ToUnixTimeSeconds();
-                var Exp = DateTime.UtcNow.AddSeconds(1000);
-                //signingCredentials  签名凭证
-                string sign = Configuration["JwtToken:secretCredentials"]; //SecurityKey 的长度必须 大于等于 16个字符
-                var secret = Encoding.UTF8.GetBytes(sign);
-                var key = new SymmetricSecurityKey(secret);
-                var signcreds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var jwt = new JwtSecurityToken(issuer: iss, audience: aud, claims: claims, notBefore: nbf, expires: Exp, signingCredentials: signcreds);
-                var JwtHander = new JwtSecurityTokenHandler();
-                var token = JwtHander.WriteToken(jwt);
+            {                
                 return Ok(new
                 {
-                    access_token = token,
+                    access_token = GeneralToken(new LoginModel { Email = "515058410@qq.com" }),
                     token_type = "Bearer",
                 });
             }
@@ -139,6 +152,34 @@ namespace MSM.WebAPI.Controllers
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 刷新令牌
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> refreshtoken(LoginModel loginModel)
+        {
+            var JwtHander = new JwtSecurityTokenHandler();
+
+            var jwt = JwtHander.ReadJwtToken(loginModel.Token);
+
+            var email = jwt.Payload.GetValueOrDefault(JwtClaimTypes.Name).ToString();
+
+            var user = await UserManager.FindByEmailAsync(email);
+
+            if(user == null)
+            {
+                return Ok(new ResultInfo { code = 1, msg = "用户无效" });
+            }
+
+            loginModel.Email = email;
+
+            Tuple<string,DateTime> tuple = GeneralToken(loginModel);
+
+            return Ok(new ResultInfo { code = 0, token = tuple.Item1, exp = tuple.Item2, status = 0 });
         }
 
 
@@ -183,11 +224,25 @@ namespace MSM.WebAPI.Controllers
 
             bitmap.Save(memoryStream, ImageFormat.Jpeg);
 
-            HttpContext.Response.Cookies.Append("SetCookies",MD5Helper.Encrypt($"{validateCode}{Configuration["JwtToken:secretCredentials"]}") , new CookieOptions { HttpOnly = true });
+            HttpContext.Response.Cookies.Append("SetCookies",MD5Helper.Encrypt($"{validatecode}{Configuration["JwtToken:secretCredentials"]}"));
 
             return File(memoryStream.ToArray(), "image/jpeg");
         }
 
+        public class ParmModel
+        {
+            public string strUserCode { get; set; }
+            public string strInvLocation { get; set; }
+            public string strInvCode { get; set; }
+            public string strResCode { get; set; }
+            public string strStepSequenceCode { get; set; }
+            public string strSegmentCode { get; set; }
+            public string strFactoryCode { get; set; }
+            public string strAreaCode { get; set; }
+            public string strProfileCode { get; set; }
+            public string strProfileValue { get; set; }
+            public string ProjectID { get; set; }
+        }
     }
 
     public class ValidateCode

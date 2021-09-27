@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MSM.Model;
 using MSM.Model.Entity;
+using MSM.MVC.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,8 @@ namespace MSM.MVC
                 option.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<MsmDbContext>();
+
+            services.AddScoped<IStudentDAL, StudentDAL>();
         }
 
         /// <summary>

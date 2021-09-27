@@ -2,33 +2,31 @@
 
 namespace MSM.Model.Migrations
 {
-    public partial class _2021042810 : Migration
+    public partial class _20210519 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "name",
-                table: "SysConfig",
-                type: "nvarchar(300)",
-                maxLength: 300,
+                name: "ParentPath",
+                table: "GoodsCategory",
+                type: "nvarchar(50)",
+                maxLength: 50,
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(400)",
-                oldMaxLength: 400,
+                oldType: "nvarchar(max)",
                 oldNullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "name",
-                table: "SysConfig",
-                type: "nvarchar(400)",
-                maxLength: 400,
+                name: "ParentPath",
+                table: "GoodsCategory",
+                type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(300)",
-                oldMaxLength: 300,
+                oldType: "nvarchar(50)",
+                oldMaxLength: 50,
                 oldNullable: true);
         }
     }

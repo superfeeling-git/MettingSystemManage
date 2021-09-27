@@ -36,6 +36,11 @@ namespace MSM.Model
             builder.Entity<MsmUserTokens>().ToTable("MsmUserTokens").HasKey(m => m.UserId);           
 
             builder.Entity<GoodsCategory>().ToTable("GoodsCategory").HasKey(m => m.CategoryID);
+
+            builder.Entity<GoodsCategory>(build => {
+                build.Property(m => m.ParentPath).HasMaxLength(50);
+            });
+
             builder.Entity<Goods>(build => {
                 build.HasKey(m => m.GoodsID);
                 build.Property(m => m.GoodsMoney).HasColumnType("money");

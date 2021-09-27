@@ -34,6 +34,16 @@
             导航属性
             </summary>
         </member>
+        <member name="P:MSM.Model.Entity.Goods.Content">
+            <summary>
+            商品介绍
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Entity.Goods.CreateTime">
+            <summary>
+            上传时间
+            </summary>
+        </member>
         <member name="P:MSM.Model.Entity.GoodsCategory.CategoryID">
             <summary>
             分类ID
@@ -87,6 +97,26 @@
         <member name="P:MSM.Model.Model.GoodsModel.CategoryID">
             <summary>
             所属分类
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.ResultInfo.msg">
+            <summary>
+            返回消息
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.ResultInfo.code">
+            <summary>
+            状态码：0-成功，>0-失败
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.ResultInfo.token">
+            <summary>
+            JWT令牌
+            </summary>
+        </member>
+        <member name="P:MSM.Model.Model.ResultInfo.exp">
+            <summary>
+            过期时间
             </summary>
         </member>
     </members>

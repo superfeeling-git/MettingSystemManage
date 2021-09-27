@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using MSM.IService;
+using Quartz;
 
 namespace MSM.WebAPI
 {
@@ -47,6 +48,7 @@ namespace MSM.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             //添加JSON序列化编码，防止中文被编码为Unicode字符。
             services
                 .AddControllers()
@@ -55,14 +57,26 @@ namespace MSM.WebAPI
                      //修改属性名称的序列化方式，首字母小写
                      options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-                     //options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 
-                     //options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                     options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 
                      //修改时间的序列化方式
                      options.SerializerSettings.Converters.Add(new IsoDateTimeConverter() { DateTimeFormat = "yyyy/MM/dd HH:mm:ss" });
                  })
                 .AddControllersAsServices();
+
+            services.AddQuartz(q =>
+            {                
+                // base quartz scheduler, job and trigger configuration
+            });
+
+            // ASP.NET Core hosting
+            services.AddQuartzServer(options =>
+            {
+                // when shutting down we want jobs to complete gracefully
+                options.WaitForJobsToComplete = true;
+            });
 
             //跨域
             services.AddCors(option =>
@@ -95,7 +109,7 @@ namespace MSM.WebAPI
            
             //添加Identity服务
             services.AddIdentity<MsmUser, MsmRoles>(option => {
-                option.SignIn.RequireConfirmedEmail = true;
+                //option.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<MsmDbContext>();
 
@@ -112,21 +126,22 @@ namespace MSM.WebAPI
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(
                 o => {
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    //是否验证发行人
-                    ValidateIssuer = true,
-                    ValidIssuer = Issurer,//发行人
-                                          //是否验证受众人
-                    ValidateAudience = true,
-                    ValidAudience = Audience,//受众人
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        //是否验证发行人
+                        ValidateIssuer = true,
+                        ValidIssuer = Issurer,//发行人
+                                              //是否验证受众人
+                        ValidateAudience = true,
+                        ValidAudience = Audience,//受众人
 
-                    //是否验证密钥
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretCredentials)),
+                        //是否验证密钥
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretCredentials)),
 
-                    ValidateLifetime = true, //验证生命周期
-                    RequireExpirationTime = true, //过期时间
+                        ValidateLifetime = true, //验证生命周期
+                        RequireExpirationTime = true, //过期时间
+                        ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -259,8 +274,10 @@ namespace MSM.WebAPI
 
             if (context.Resource is Endpoint endpoint)
             {
-                var actionDescriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
+                var actionDescriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();                
             }
+
+            
 
             context.Succeed(requirement);
 

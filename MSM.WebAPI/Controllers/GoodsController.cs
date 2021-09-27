@@ -8,6 +8,8 @@ using MSM.Model.Entity;
 using MSM.IService;
 using MSM.Model.Model;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MSM.WebAPI.Controllers
 {
@@ -16,14 +18,28 @@ namespace MSM.WebAPI.Controllers
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Policy = "Custom")]
+    //[Authorize]
     public class GoodsController : ControllerBase
     {
         private IGoodsService goodsService;
-        public GoodsController(IGoodsService _goodsService)
+
+        private IWebHostEnvironment env;
+
+        public GoodsController(IGoodsService _goodsService, IWebHostEnvironment _env)
         {
             this.goodsService = _goodsService;
+            this.env = _env;
         }
+
+        [HttpGet]
+        [Route("getlist/{page}/{limit}")]
+        [Route("getlist/{keywords}/{page}/{limit}")]
+        public IActionResult Test(string keywords,int page, int limit)
+        {
+
+            return Ok();
+        }
+
 
         /// <summary>
         /// 添加商品
@@ -33,6 +49,7 @@ namespace MSM.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(GoodsModel goods)
         {
+            
             await goodsService.CreateAsync(new Goods { CategoryID = goods.CategoryID, GoodsID = goods.GoodsID, GoodsMoney = goods.GoodsMoney, GoodsName = goods.GoodsName, GoodsPic = goods.GoodsPic });
             return Ok();
         }
@@ -42,10 +59,30 @@ namespace MSM.WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("/api/test")]
+        //[Route("/api/test")]
         public IActionResult GetAll()
         {
             return new JsonResult(goodsService.GetAll());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> UploadFileAsync(IFormFile file)
+        {
+            string extName = Path.GetExtension(file.FileName);
+            string fileName = $"{Guid.NewGuid()}{extName}";
+            string filePath = Path.Combine(env.WebRootPath, fileName);
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+                await stream.FlushAsync();
+            }
+
+            return Ok(new { file = fileName });
         }
     }
 }
